@@ -88,7 +88,6 @@ public class Simulation implements ControllerProvider{
 	private final StimulusController stimulusController;
 	private final ScenarioCache scenarioCache;
 
-	private double accumulatedTime = 0;
 
 	public Simulation(MainModel mainModel, IPerceptionModel perceptionModel,
 					  ICognitionModel cognitionModel, double startTimeInSec,
@@ -472,8 +471,10 @@ public class Simulation implements ControllerProvider{
 	}
 
 
-
+	///private double CumulativedTime = 0.0;
+	private double CumulativedTime = 0.0;
 	private void updateLocomotionLayer(double simTimeInSec) {
+		//double CumulativedTime = 0.0;
 		for (Model m : models) {
 			List<SourceController> stillSpawningSource = this.sourceControllers.stream().filter(s -> !s.isSourceFinished(simTimeInSec)).collect(Collectors.toList());
 			int pedestriansInSimulation = this.simulationState.getTopography().getPedestrianDynamicElements().getElements().size();
@@ -481,16 +482,17 @@ public class Simulation implements ControllerProvider{
 
 			// Only update until there are pedestrians in the scenario or pedestrian to spawn or aerosol clouds persist
 			if (!stillSpawningSource.isEmpty() || pedestriansInSimulation > 0 || aerosolCloudsInSimulation > 0) {
-				if (m instanceof SIRGroupModel) {
-					accumulatedTime += this.attributesSimulation.getSimTimeStepLength();
+				if (m instanceof SIRGroupModel){
+					CumulativedTime += this.attributesSimulation.getSimTimeStepLength();
 					double fixedTime = 1.0;
-					while (accumulatedTime >= fixedTime) {
+					while (CumulativedTime >= fixedTime) {
 						m.update(simTimeInSec);
-						accumulatedTime -= fixedTime;
+						CumulativedTime -= fixedTime;
 					}
 				}
-				else m.update(simTimeInSec);
-
+				else{
+					m.update(simTimeInSec);
+				}
 				if (topography.isRecomputeCells()) {
 					// rebuild CellGrid if model does not manage the CellGrid state while updating
 					topographyController.update(simTimeInSec); //rebuild CellGrid

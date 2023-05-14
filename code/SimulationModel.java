@@ -20,22 +20,23 @@ public abstract class SimulationModel<T extends DefaultSimulationConfig> extends
 	public final T config;
 	private ConcurrentHashMap<Integer, Color> colorMap;
 	private Random random;
-
 	protected final Color infected_color = new Color(255, 0, 0);
 	protected final Color recovered_color = new Color(0, 255, 0);
 	protected final Color susceptible_color = new Color(0, 0, 255);
-
 	@SuppressWarnings("unchecked")
 	public SimulationModel(final T config) {
 		super(config);
 		this.config = config;
-		this.config.setAgentColoring(AgentColoring.GROUP);
 		this.colorMap = new ConcurrentHashMap<>();
 		this.colorMap.put(-1, config.getPedestrianDefaultColor());
+		this.random = new Random();
+
+		//New Changes
+		this.config.setAgentColoring(AgentColoring.GROUP);
 		this.colorMap.put(0, infected_color);
 		this.colorMap.put(1, susceptible_color);
 		this.colorMap.put(2, recovered_color);
-		this.random = new Random();
+
 	}
 
 	public abstract Collection<Agent> getAgents();
